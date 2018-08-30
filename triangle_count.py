@@ -14,11 +14,11 @@ import time
 
 ######connection string to vertica #####
 try:
-    conn_info = {'host':'192.168.1.11',
+    conn_info = {'host':'hostname/ip',
                  'port': 5433,
                  'user': 'vertica',
-                 'password': '12512Marlive',
-                 'database':'graphdb',
+                 'password': 'password',
+                 'database':'databasename',
                  'read_timeout': 60000000,
                  'unicode_error': 'strict',
                  'ssl': False,
@@ -34,7 +34,7 @@ except:
     print("Database connection error")
     sys.exit()
 
-sys.argv = ["seminaive_tc.py", "dataset=tree10m.csv"]
+sys.argv = ["triangle_count.py", "dataset=tree10m.csv"]
 
 
 ####check the command line arguments ####
@@ -58,7 +58,7 @@ def drop_table(table_name):
     file.write(sql_string+'\n')
  
 
-####Create E####
+####Create E with partition####
 drop_table('E')
 sql_string="CREATE TABLE E (i int ENCODING RLE, j int ENCODING RLE, v int ENCODING RLE, PRIMARY KEY(i,j)) PARTITION BY i;"
 cur.execute(sql_string)
@@ -71,7 +71,7 @@ sql_string="COPY E FROM '/home/vertica/tahsin/TC_programs/"+input_dataset+"' par
 cur.execute(sql_string)
 file.write(sql_string+'\n')
 
-###maintaiining 2nd versions of E
+###maintaiining 2nd versions of E (Ed) with partition#####
 drop_table('E2')
 sql_string="CREATE TABLE E2 (i int ENCODING RLE, j int ENCODING RLE, v int ENCODING RLE, PRIMARY KEY(i,j)) PARTITION BY j;"
 cur.execute(sql_string)
@@ -85,17 +85,13 @@ file.write(sql_string+'\n')
 #####Counting the number of triangles ######
 #drop_table('traingle_count')
 print("Counting the trianlges...")
-start_time=time.time()
+start_time=time.time()  ##time starts
 sql_string="SELECT COUNT(*) FROM E e1 JOIN E2 e2 ON e1.j=e2.i JOIN E e3 ON e2.j=e3.i AND e3.j=e1.i WHERE e1.i<e2.j AND e2.i<e2.j ;" 
 cur.execute(sql_string)
-print('Total time=',time.time()-start_time)
+print('Total time=',time.time()-start_time) ##Get the total time
 total_triangle = cur.fetchone()
 file.write(sql_string+'\n')
 print("Total Triangles=",total_triangle[0])
-
-
-
-
  
 file.close()
 connection.close()
