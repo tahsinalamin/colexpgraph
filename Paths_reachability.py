@@ -10,7 +10,7 @@ try:
                  'port': 5433,
                  'user': 'username',
                  'password': 'password',
-                 'database':'fournodes',
+                 'database':'dbname',
                  'read_timeout': 60000000,
                  'unicode_error': 'strict',
                  'ssl': False,
