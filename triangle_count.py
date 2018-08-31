@@ -11,7 +11,6 @@ import sys
 import math
 import time
 
-
 ######connection string to vertica #####
 try:
     conn_info = {'host':'hostname/ip',
@@ -28,14 +27,12 @@ try:
     # simple connection, with manual close
     connection = vertica_python.connect(**conn_info)
     cur = connection.cursor()
-
  
 except:
     print("Database connection error")
     sys.exit()
 
 sys.argv = ["triangle_count.py", "dataset=tree10m.csv"]
-
 
 ####check the command line arguments ####
 if len(sys.argv) != 2:
@@ -64,7 +61,6 @@ sql_string="CREATE TABLE E (i int ENCODING RLE, j int ENCODING RLE, v int ENCODI
 cur.execute(sql_string)
 file.write(sql_string+'\n')
 
-
 ####Load Dataset#####
 print("Loading the CSV file..")
 sql_string="COPY E FROM '/home/vertica/tahsin/TC_programs/"+input_dataset+"' parser fcsvparser();"
@@ -79,8 +75,6 @@ file.write(sql_string+'\n')
 sql_string="INSERT INTO E2 SELECT i AS i, j AS j, v AS v  FROM E;"
 cur.execute(sql_string)
 file.write(sql_string+'\n')
-
-
 
 #####Counting the number of triangles ######
 #drop_table('traingle_count')
